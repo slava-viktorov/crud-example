@@ -1,0 +1,81 @@
+services:
+  db:
+    image: postgres
+    restart: on-failure
+    shm_size: 128mb
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE}
+    ports:
+      - ${DB_PORT}:5432
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - app_network
+  
+  # db_test:
+  #   image: postgres
+  #   restart: on-failure
+  #   shm_size: 128mb
+  #   environment:
+  #     POSTGRES_USER: ${DB_USERNAME}
+  #     POSTGRES_PASSWORD: ${DB_PASSWORD}
+  #     POSTGRES_DB: ${DB_DATABASE_TEST}
+  #   ports:
+  #     - ${DB_PORT_TEST}:5432
+  #   volumes:
+  #     - pgdata_test:/var/lib/postgresql/data
+      # networks:
+      #   - app_network
+  backend:
+    build:
+      context: ./backend
+      dockerfile: ./Dockerfile
+      target: development
+    user: "1000:1000"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    environment:
+      NODE_ENV: development
+
+      DB_HOST: db
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_DATABASE: ${DB_DATABASE}
+      DB_PORT: ${DB_PORT}
+
+      DB_HOST_TEST: db_test
+      DB_DATABASE_TEST: ${DB_DATABASE_TEST}
+      DB_PORT_TEST: ${DB_PORT_TEST}
+
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+      JWT_EXPIRATION_TIME_IN_MINUTES: ${JWT_EXPIRATION_TIME_IN_MINUTES}
+      JWT_REFRESH_EXPIRATION_TIME_IN_DAYS: ${JWT_REFRESH_EXPIRATION_TIME_IN_DAYS}
+
+      JWT_REFRESH_TOKEN_NAME: ${JWT_REFRESH_TOKEN_NAME}
+      JWT_ACCESS_TOKEN_NAME: ${JWT_ACCESS_TOKEN_NAME}
+    ports:
+      - ${BACKEND_PORT}:3000
+    networks:
+      - app_network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: development
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    environment:
+      NODE_ENV: development
+      NEXT_PUBLIC_API_URL: http://localhost:${BACKEND_PORT}/api/v1
+      API_URL: http://backend:${BACKEND_PORT}/api/v1
+    ports:
+      - ${FRONTEND_PORT}:3000
+    networks:
+      - app_network
