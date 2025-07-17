@@ -54,7 +54,7 @@ make seed
 # Остановка
 make down
 ```
-Приложение доступно по адресу http://localhost:3001/items
+Приложение доступно по адресу http://localhost:3001/items<br>
 Документация Swagger по адресу http://localhost:3000/docs
 ### Остановка
 ```bash
@@ -109,21 +109,6 @@ make test-unit
 # E2E тесты
 make test-e2e
 ```
-
-### Docker команды
-
-#### Основные команды
-```bash
-# Запуск
-docker compose up --build
-
-# Остановка
-docker compose down
-
-# Просмотр логов
-docker compose logs -f
-```
-
 #### База данных
 ```bash
 # Подключение к базе данных
@@ -134,44 +119,12 @@ make migration-run
 make migration-generate
 make migration-revert
 ```
-
-#### Разработка
-```bash
-# Линтинг
-make lint
-
-# Форматирование
-make format
-
-# Сборка
-make build
-
-# Запуск в режиме разработки
-make start-dev
-```
-
-### Локальная разработка
-
-#### Backend
-```bash
-cd backend
-npm install
-npm run start:dev
-```
-
-#### Frontend
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
 ## API Endpoints
 
 После запуска API будет доступен по адресу: `http://localhost:3000`
 
 ### Документация API
-- Swagger UI: `http://localhost:3000/api/docs`
+- Swagger UI: `http://localhost:3000/docs`
 
 ### Основные эндпоинты
 - `POST /api/v1/auth/login` - вход в систему
